@@ -1,5 +1,5 @@
 # AlgoViz
-This project is a work in progress generalized algorithm visualizer. We are currently focusing on dynamic programming (DP) algorithms, and finding the best ways to visualize them intuitively for pedagogical use. We start by looking at a DP solution to subset sum, a problem that asks: given an array of nonnegative integers A and a goal nonnegative integer B, does there exist a subset of A such that the sum of all the elements is B?
+This project is a work in progress generalized algorithm visualizer. We are currently focusing on dynamic programming (DP) algorithms, and finding the best ways to visualize them intuitively for pedagogical use. We start by looking at a DP solution to subset sum, a problem that asks: given an array of nonnegative integers A and a goal nonnegative integer B, does there exist a subset of A such that the sum of all the elements in the subset is B?
 
 ## DP Matrix Representation
 Watch as the algorithm first iterates through the base cases, then through the recurrence. Hovering over an entry reveals how a retrieval algorithm could recollect a valid subset. Clicking on an entry shows the subproblems that that entry relied on.
