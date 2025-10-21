@@ -14,7 +14,7 @@ public class Arrow : MonoBehaviour
         Vector3 n_delta = delta / delta.magnitude;
         Vector3 lineEnd = end - n_delta * (tip.transform.localScale.y / 2);
 
-        tip.transform.position = lineEnd;
+        tip.transform.localPosition = lineEnd;
         float angle = Mathf.Atan2(end.y - start.y, end.x - start.x) * Mathf.Rad2Deg - 90f;
         tip.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
 

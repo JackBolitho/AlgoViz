@@ -21,7 +21,6 @@ public class DPMatrixBuilder : MonoBehaviour
     [SerializeField] private float elementWriteWait;
 
     private List<GameObject> arrows = new List<GameObject>();
-    private GameObject canvas;
     private Vector3 startPosition;
     private GameObject[,] Fobjs;
 
@@ -33,18 +32,14 @@ public class DPMatrixBuilder : MonoBehaviour
     private int B;
     private int[,] F;
 
-    void Awake()
-    {
-        canvas = GameObject.Find("WorldCanvas");
-    }
-
     public void CreateMatrix(List<int> A, int B, Vector3 popupPosition)
     {
-        this.startPosition = popupPosition - new Vector3(A.Count / 2f * elementSpacing.x, distanceFromPopupToViz);
+        transform.position = popupPosition;
+        this.startPosition = -new Vector3(A.Count / 2f * elementSpacing.x, distanceFromPopupToViz);
 
         //create popup graphic
-        GameObject popup = Instantiate(popupValues, canvas.transform);
-        popup.transform.position = popupPosition;
+        GameObject popup = Instantiate(popupValues, transform);
+        popup.transform.localPosition = Vector3.zero;
         arrayPopupText = popup.transform.Find("ArrayText").GetComponent<TextMeshProUGUI>();
         goalPopupText = popup.transform.Find("GoalText").GetComponent<TextMeshProUGUI>();
 
@@ -128,9 +123,8 @@ public class DPMatrixBuilder : MonoBehaviour
 
     private GameObject CreateElement(int val, int n, int b, Vector3 pos, Vector3? arrowDist, GameObject parent)
     {
-        GameObject element = Instantiate(elementPrefab);
+        GameObject element = Instantiate(elementPrefab, transform);
         element.GetComponentInChildren<TextMeshProUGUI>().text = val.ToString();
-        element.transform.SetParent(canvas.transform);
         element.transform.localPosition = pos + startPosition;
 
         Element elem = element.GetComponent<Element>();
@@ -139,13 +133,14 @@ public class DPMatrixBuilder : MonoBehaviour
 
         if (arrowDist is not null)
         {
+            /*
             if (val == 1)
             {
                 GameObject arrow = DrawArrow(pos + startPosition, new Vector2(arrowDist.Value.x + startPosition.x, arrowDist.Value.y + startPosition.y));
                 elem.InitializeArrows(parent, arrow);
                 arrows.Add(arrow);
                 arrow.SetActive(false);
-            }
+            }*/
 
             //set which elements are the subproblem solutions
             if (A[n - 1] > b)
@@ -163,9 +158,8 @@ public class DPMatrixBuilder : MonoBehaviour
 
     private GameObject CreateLabel(string text, Vector2 pos)
     {
-        GameObject label = Instantiate(labelPrefab);
-        label.transform.SetParent(canvas.transform);
-        label.transform.position = pos + new Vector2(startPosition.x, startPosition.y);
+        GameObject label = Instantiate(labelPrefab, transform);
+        label.transform.localPosition = pos + new Vector2(startPosition.x, startPosition.y);
         label.GetComponentInChildren<TextMeshProUGUI>().text = text;
         return label;
     }
@@ -173,8 +167,9 @@ public class DPMatrixBuilder : MonoBehaviour
     //arrow base at p1, arrow head at p2
     private GameObject DrawArrow(Vector2 p1, Vector2 p2)
     {
-        GameObject arrow = Instantiate(arrowPrefab);
-        arrow.GetComponent<Arrow>().DrawLine(p1 /*+ new Vector2(startPosition.x, startPosition.y)*/, p2 /*+ new Vector2(startPosition.x, startPosition.y)*/);
+        GameObject arrow = Instantiate(arrowPrefab, transform);
+        arrow.transform.localPosition = Vector3.zero;
+        arrow.GetComponent<Arrow>().DrawLine(p1 , p2);
         return arrow;
     }
 
@@ -245,13 +240,13 @@ public class DPMatrixBuilder : MonoBehaviour
     {
         if (includeParent != null)
         {
-            GameObject arrow = DrawArrow(element.transform.position, includeParent.transform.position);
+            GameObject arrow = DrawArrow(element.transform.localPosition, includeParent.transform.localPosition);
             subproblemArrows.Add(arrow);
         }
         
         if(excludeParent != null)
         {
-            GameObject arrow = DrawArrow(element.transform.position, excludeParent.transform.position);
+            GameObject arrow = DrawArrow(element.transform.localPosition, excludeParent.transform.localPosition);
             subproblemArrows.Add(arrow);
         }
     }

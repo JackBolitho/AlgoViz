@@ -27,6 +27,10 @@ public class Navigator : MonoBehaviour
     //handles creation menu, which shows possible 
     [SerializeField] private GameObject creationMenuPrefab;
     private GameObject currentCreationMenu = null;
+
+    //deals with history
+    private List<string> historyStack = new List<string>();
+
     
     void OnEnable()
     {
@@ -114,12 +118,30 @@ public class Navigator : MonoBehaviour
     }
 
     //activated by the exit button in the creation menu, or when the creation menu makes an algorithm visualization
-    public void NullifyCurrentCreationMenu() 
+    public void NullifyCurrentCreationMenu()
     {
-        if(currentCreationMenu != null)
+        if (currentCreationMenu != null)
         {
             Destroy(currentCreationMenu);
         }
         currentCreationMenu = null;
+    }
+
+    public void PushActionToHistory(string action)
+    {
+        historyStack.Add(action);
+    }
+    
+    public void UndoHistoryAction()
+    {
+        if (historyStack.Count <= 0)
+        {
+            return;
+        }
+
+        string currAction = historyStack[historyStack.Count - 1];
+        historyStack.RemoveAt(historyStack.Count - 1);
+
+        //TODO: add undo
     }
 }

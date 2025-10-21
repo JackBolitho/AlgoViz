@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -34,21 +35,18 @@ public class TreeBuilder : MonoBehaviour
     [SerializeField] private Vector2 spacing;
     private Vector3 startPosition;
     private Vertex treeHead;
-    private GameObject canvas;
 
     //parameters for algorithm
     private List<int> A;
     private int B;
     private TreeElement[,] F;
 
-    private void Awake()
-    {
-        canvas = GameObject.Find("WorldCanvas");
-    }
 
     public void CreateTree(List<int> A, int B, Vector3 startPosition)
     {
-        this.startPosition = startPosition;
+        transform.position = startPosition;
+        startPosition = Vector3.zero;
+
         this.A = A;
         this.B = B;
         F = SubsetSum();
@@ -155,14 +153,14 @@ public class TreeBuilder : MonoBehaviour
     private Vertex InstantiateVertex(TreeElement element, Vertex parent)
     {
         Vertex v = Instantiate(vertexPrefab).GetComponent<Vertex>();
-        v.transform.SetParent(canvas.transform);
+        v.transform.SetParent(transform);
         if (parent == null)
         {
-            v.transform.position = startPosition;
+            v.transform.localPosition = startPosition;
         }
         else
         {
-            v.transform.position = parent.transform.position;
+            v.transform.localPosition = parent.transform.localPosition;
         }
         v.InitializeVertex(this, element, parent);
 
@@ -188,7 +186,7 @@ public class TreeBuilder : MonoBehaviour
         FirstPass(root, 0);
 
         // Calculate offset to keep root in place
-        float desiredRootX = root.transform.position.x - startPosition.x;
+        float desiredRootX = root.transform.localPosition.x - startPosition.x;
         float computedRootX = prelim[root];
         float offsetX = desiredRootX - computedRootX;
 

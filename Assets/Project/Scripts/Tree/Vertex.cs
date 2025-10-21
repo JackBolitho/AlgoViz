@@ -19,7 +19,7 @@ public class Vertex : MonoBehaviour
     public Vertex parent { get; private set; }
     public List<Vertex> children = new List<Vertex>();
     private List<Arrow> arrowsToChildren = new List<Arrow>();
-    private Vector3 goalPosition;
+    [SerializeField] private Vector3 goalPosition;
     public List<int> currSubset;
 
     //text references
@@ -210,18 +210,18 @@ public class Vertex : MonoBehaviour
     {
         // Quadratic easing factor
         float speed = 5f; // Adjust this value to control the speed of the movement
-        float distance = Vector3.Distance(transform.position, goalPosition);
+        float distance = Vector3.Distance(transform.localPosition, goalPosition);
 
         // If the vertex is not already at the goal position
         if (distance > 0.01f)
         {
             // Smoothly move the vertex towards the goal position
-            transform.position = Vector3.Lerp(transform.position, goalPosition, Time.deltaTime * speed);
+            transform.localPosition = Vector3.Lerp(transform.localPosition, goalPosition, Time.deltaTime * speed);
         }
         else
         {
             // Snap to the goal position if close enough
-            transform.position = goalPosition;
+            transform.localPosition = goalPosition;
         }
 
         DrawLine();

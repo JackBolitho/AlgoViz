@@ -18,16 +18,13 @@ public class CreationMenu : MonoBehaviour
     private Navigator navigator;
     [SerializeField] private GameObject dPMatrixBuilderPrefab;
     [SerializeField] private GameObject treeBuilderPrefab;
-    private Animator animator;
+    private GameObject worldCanvas;
 
     // Start is called before the first frame update
     void Awake()
     {
-        Canvas.ForceUpdateCanvases();
         navigator = GameObject.Find("Navigator").GetComponent<Navigator>();
-        animator = gameObject.GetComponent<Animator>();
-        animator.Rebind();
-        animator.Update(0f);
+        worldCanvas = GameObject.Find("WorldCanvas");
     }
 
     private List<int> ParseArray(string arrayText)
@@ -103,12 +100,12 @@ public class CreationMenu : MonoBehaviour
         switch (selectedText)
         {
             case "DP Matrix":
-                GameObject dPObj = Instantiate(dPMatrixBuilderPrefab);
+                GameObject dPObj = Instantiate(dPMatrixBuilderPrefab, worldCanvas.transform);
                 DPMatrixBuilder dPMatrixBuilder = dPObj.GetComponent<DPMatrixBuilder>();
                 dPMatrixBuilder.CreateMatrix(arrayValues, goalValue, gameObject.transform.position);
                 break;
             case "Decision Tree":
-                GameObject treeObj = Instantiate(treeBuilderPrefab);
+                GameObject treeObj = Instantiate(treeBuilderPrefab, worldCanvas.transform);
                 TreeBuilder treeBuilder = treeObj.GetComponent<TreeBuilder>();
                 treeBuilder.CreateTree(arrayValues, goalValue, gameObject.transform.position);
                 break;
