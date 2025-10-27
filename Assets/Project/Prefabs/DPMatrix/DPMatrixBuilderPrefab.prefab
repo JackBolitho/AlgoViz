@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 980c7b132c8f846a8adedd729d6dcd34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  popupValues: {fileID: 51297737200361792, guid: a8a10f312c0c244bf8bbe1c72046f1dc, type: 3}
+  popupValues: {fileID: 51297737200361792, guid: c1ac13ac12ff34008b9acf9ad25027d3, type: 3}
   elementPrefab: {fileID: 5997701603209019193, guid: fc430c0d1cb4b4624a574aec5d53f887, type: 3}
   arrowPrefab: {fileID: 861265586231275093, guid: da15afcbdcf484972bf1dd2fb9d4164a, type: 3}
   labelPrefab: {fileID: 5997701603209019193, guid: acc64f386b56d458b8c01f55add2a115, type: 3}

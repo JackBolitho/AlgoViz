@@ -79,4 +79,9 @@ public class Element : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         dPMatrixBuilder.ShowSubproblemArrows(this, includeParent, excludeParent);
     }
+
+    public bool IsBaseCase()
+    {
+        return includeParent == null && excludeParent == null;
+    }
 }

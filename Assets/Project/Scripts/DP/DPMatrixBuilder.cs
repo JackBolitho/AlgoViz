@@ -14,8 +14,7 @@ public class DPMatrixBuilder : MonoBehaviour
     [SerializeField] private GameObject backdropPrefab;
 
     //popup graphic
-    private TextMeshProUGUI arrayPopupText;
-    private TextMeshProUGUI goalPopupText;
+    private TextMeshProUGUI popupText;
 
     //DP matrix metadata
     [SerializeField] private float distanceFromPopupToViz;
@@ -45,8 +44,7 @@ public class DPMatrixBuilder : MonoBehaviour
         //create popup graphic
         GameObject popup = Instantiate(popupValues, transform);
         popup.transform.localPosition = Vector3.zero;
-        arrayPopupText = popup.transform.Find("ArrayText").GetComponent<TextMeshProUGUI>();
-        goalPopupText = popup.transform.Find("GoalText").GetComponent<TextMeshProUGUI>();
+        popupText = popup.transform.Find("PopupText").GetComponent<TextMeshProUGUI>();
 
         this.A = A;
         this.B = B;
@@ -211,26 +209,59 @@ public class DPMatrixBuilder : MonoBehaviour
 
     public void ShowElementPopup(int n, int B)
     {
-        List<int> A = SubsetSumRetrieval(n, B);
-
-        //construct text
-        string strA = "{";
-        if (A.Count > 0)
+        string msg;
+        if (Fobjs[n, B].GetComponent<Element>().IsBaseCase())
         {
-            for (int i = 0; i < A.Count - 1; i++)
+            if (F[n, B] == 0)
             {
-                strA += A[i].ToString() + ", ";
+                msg = "Base Case: \nThere is no subset of the empty set that sums to " + B.ToString() + ".";
             }
-            strA += A[A.Count - 1].ToString() + "}";
+            else
+            {
+                msg = "Base Case: \nThe empty set is a valid subset that sums to 0 by definition.";
+            }
         }
         else
         {
-            strA += "}";
-        }
-        string strB = B.ToString();
+            //get array string of length B
+            string arrayStr = "{";
+            for (int i = 0; i < n - 1; i++)
+            {
+                arrayStr += A[i].ToString() + ", ";
+            }
+            if (n >= 1)
+            {
+                arrayStr += A[n - 1].ToString();
+            }
+            arrayStr += "}";
+        
+            if (F[n, B] == 0)
+            {
+                msg = "No subset of \n" + arrayStr + "\nsums up to " + B.ToString() + ".\nClick to see why.";
+            }
+            else
+            {
+                List<int> subset = SubsetSumRetrieval(n, B);
 
-        arrayPopupText.text = strA;
-        goalPopupText.text = strB;
+                //construct text
+                string subsetStr = "{";
+                if (subset.Count > 0)
+                {
+                    for (int i = 0; i < subset.Count - 1; i++)
+                    {
+                        subsetStr += subset[i].ToString() + ", ";
+                    }
+                    subsetStr += subset[subset.Count - 1].ToString() + "}";
+                }
+                else
+                {
+                    subsetStr += "}";
+                }
+                string strB = B.ToString();
+                msg = "A subset of \n" + arrayStr + "\nthat sums to " + strB + " is \n" + subsetStr + ".";
+            }
+        }
+        popupText.text = msg;
     }
 
     //input: the DP matrix F from subset sum, the nth value (1 indexed)
