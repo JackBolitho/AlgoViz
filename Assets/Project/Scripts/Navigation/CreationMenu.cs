@@ -16,6 +16,7 @@ public class CreationMenu : MonoBehaviour
 
     //visualization components
     private Navigator navigator;
+    [SerializeField] private GameObject dragableBackdrop;
     [SerializeField] private GameObject dPMatrixBuilderPrefab;
     [SerializeField] private GameObject treeBuilderPrefab;
     private GameObject worldCanvas;

@@ -48,6 +48,8 @@ MonoBehaviour:
   elementPrefab: {fileID: 5997701603209019193, guid: fc430c0d1cb4b4624a574aec5d53f887, type: 3}
   arrowPrefab: {fileID: 861265586231275093, guid: da15afcbdcf484972bf1dd2fb9d4164a, type: 3}
   labelPrefab: {fileID: 5997701603209019193, guid: acc64f386b56d458b8c01f55add2a115, type: 3}
+  backdropPrefab: {fileID: 4234727167152995069, guid: 7f58c8b55d4c34af7bea4d132a3feafd, type: 3}
   distanceFromPopupToViz: 3
   elementSpacing: {x: 1.1, y: 1.1, z: 0}
   elementWriteWait: 0.2
+  backdropPadding: {x: 3, y: 1}

@@ -193,7 +193,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -791,6 +791,7 @@ MonoBehaviour:
   arrayInput: {fileID: 8925547855959443781}
   goalInput: {fileID: 8305841142027217996}
   visualizationTypeInput: {fileID: 2606989796121691448}
+  dragableBackdrop: {fileID: 4234727167152995069, guid: 7f58c8b55d4c34af7bea4d132a3feafd, type: 3}
   dPMatrixBuilderPrefab: {fileID: 2773369600234288580, guid: 255e078feb0dd4ee3b0aaf6bcbfea6f5, type: 3}
   treeBuilderPrefab: {fileID: 417026178962801482, guid: 9c43e3458f6ad4c11a4b2009566f2add, type: 3}
 --- !u!95 &6670863217316708463
@@ -1263,7 +1264,7 @@ GameObject:
   - component: {fileID: 4683503750997487252}
   - component: {fileID: 1303369992792189407}
   m_Layer: 5
-  m_Name: Backdrop
+  m_Name: DraggableBackdrop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

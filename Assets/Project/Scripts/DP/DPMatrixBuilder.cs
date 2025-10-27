@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 
@@ -10,6 +11,7 @@ public class DPMatrixBuilder : MonoBehaviour
     [SerializeField] private GameObject elementPrefab;
     [SerializeField] private GameObject arrowPrefab;
     [SerializeField] private GameObject labelPrefab;
+    [SerializeField] private GameObject backdropPrefab;
 
     //popup graphic
     private TextMeshProUGUI arrayPopupText;
@@ -32,6 +34,9 @@ public class DPMatrixBuilder : MonoBehaviour
     private int B;
     private int[,] F;
 
+    //visuals
+    [SerializeField] private Vector2 backdropPadding;
+
     public void CreateMatrix(List<int> A, int B, Vector3 popupPosition)
     {
         transform.position = popupPosition;
@@ -45,8 +50,31 @@ public class DPMatrixBuilder : MonoBehaviour
 
         this.A = A;
         this.B = B;
+        AddBackdrop();
         DrawLabels();
         StartCoroutine(CreateMatrixImpl());
+    }
+
+    public void AddBackdrop()
+    {
+        float elementYScale = elementPrefab.transform.localScale.y;
+        float popupYScale = 2f;
+
+        float elementGap = elementSpacing.y - elementYScale;
+        float elementsHeight = (elementYScale + elementGap) * (B + 1) - elementGap;
+        float elementsWidth = (elementYScale + elementGap) * (A.Count + 1) - elementGap;
+
+        float popupGap = distanceFromPopupToViz - (popupYScale / 2f + elementYScale / 2f);
+        float popupHeader = popupYScale + popupGap;
+        float totalHeight = elementsHeight + popupHeader;
+
+        Vector3 position = new Vector3(0.0f, (popupYScale / 2f) - (totalHeight / 2f), 0f);
+        Vector3 scale = new Vector3(elementsWidth + backdropPadding.x, totalHeight + backdropPadding.y * 2f, 0f);
+        
+        GameObject backdrop = Instantiate(backdropPrefab, transform);
+        backdrop.GetComponent<RectTransform>().sizeDelta = new Vector2(scale.x, scale.y);
+        backdrop.transform.localPosition = position;
+        backdrop.transform.SetAsFirstSibling();
     }
 
     private IEnumerator DrawLabels()
@@ -243,11 +271,26 @@ public class DPMatrixBuilder : MonoBehaviour
             GameObject arrow = DrawArrow(element.transform.localPosition, includeParent.transform.localPosition);
             subproblemArrows.Add(arrow);
         }
-        
-        if(excludeParent != null)
+
+        if (excludeParent != null)
         {
             GameObject arrow = DrawArrow(element.transform.localPosition, excludeParent.transform.localPosition);
             subproblemArrows.Add(arrow);
         }
+    }
+
+    public void DeleteVisualization()
+    {
+        DeleteSubproblemArrows();
+        Destroy(this.gameObject);
+    }
+    
+    public void DeleteSubproblemArrows()
+    {
+        foreach (GameObject obj in subproblemArrows)
+        {
+            Destroy(obj);
+        }
+        subproblemArrows = new List<GameObject>();
     }
 }

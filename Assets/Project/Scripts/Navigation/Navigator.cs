@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Navigator : MonoBehaviour
 {
@@ -23,15 +25,18 @@ public class Navigator : MonoBehaviour
     private float targetZoom;
     private Vector2 cameraOrigin;
     private bool draggingScreen = false;
+    private Vector2 draggingObjectOffset;
+    private GameObject draggingObject = null;
 
     //handles creation menu, which shows possible 
     [SerializeField] private GameObject creationMenuPrefab;
     private GameObject currentCreationMenu = null;
 
-    //deals with history
-    private List<string> historyStack = new List<string>();
+    //deals with UI
+    private GraphicRaycaster raycaster;
+    private EventSystem eventSystem;
+    private PointerEventData pointerEventData;
 
-    
     void OnEnable()
     {
         controls.Enable();
@@ -52,17 +57,45 @@ public class Navigator : MonoBehaviour
 
         targetZoom = mainCamera.orthographicSize;
         zoomCamera = controls.Editor.ZoomCamera;
-
         canvas = GameObject.Find("WorldCanvas");
+
+        raycaster = canvas.GetComponent<GraphicRaycaster>();
+        eventSystem = EventSystem.current;
     }
 
     //left click to start drag
     private void OnLeftClick(InputAction.CallbackContext context)
     {
+        //Set up the new Pointer Event
+        pointerEventData = new PointerEventData(eventSystem);
+        //Set the Pointer Event Position to that of the mouse position
+        pointerEventData.position = Input.mousePosition;
+
+        //Create a list of Raycast Results
+        List<RaycastResult> results = new List<RaycastResult>();
+
+        //Raycast using the Graphics Raycaster and mouse click position
+        raycaster.Raycast(pointerEventData, results);
+
         //get world position relative to mouse
         Vector2 mousePos = context.ReadValue<Vector2>();
         Vector2 worldPos = Camera.main.ScreenToWorldPoint(mousePos);
-        StartDragScreen(worldPos);
+
+        //check for draggable backdrop
+        if(results.Count > 0)
+        {
+            GameObject hitObj = results[0].gameObject;
+            if (hitObj.name.Contains("Draggable"))
+            {
+                draggingObject = hitObj.transform.parent.gameObject;
+                draggingObjectOffset = new Vector2(draggingObject.transform.position.x - worldPos.x, draggingObject.transform.position.y - worldPos.y);
+                draggingObject.transform.SetAsLastSibling();
+            }
+        }
+        else
+        {
+            StartDragScreen(worldPos);
+        }
     }
 
     //right click to open creation menu
@@ -87,6 +120,7 @@ public class Navigator : MonoBehaviour
     private void EndDragScreen()
     {
         draggingScreen = false;
+        draggingObject = null;
     }
 
     private void Update()
@@ -102,6 +136,18 @@ public class Navigator : MonoBehaviour
                 Vector2 worldPos = Camera.main.ScreenToWorldPoint(controls.Editor.LeftClick.ReadValue<Vector2>());
                 Vector2 difference = new Vector2(worldPos.x - mainCamera.transform.position.x, worldPos.y - mainCamera.transform.position.y);
                 mainCamera.transform.position = new Vector3(cameraOrigin.x - difference.x, cameraOrigin.y - difference.y, mainCamera.transform.position.z);
+            }
+        }
+        else if(draggingObject != null)
+        {
+            if (controls.Editor.LeftClick.WasReleasedThisFrame())
+            {
+                EndDragScreen();
+            }
+            else
+            {
+                Vector2 worldPos = Camera.main.ScreenToWorldPoint(controls.Editor.LeftClick.ReadValue<Vector2>());
+                draggingObject.transform.position = worldPos + draggingObjectOffset;
             }
         }
 
@@ -125,23 +171,5 @@ public class Navigator : MonoBehaviour
             Destroy(currentCreationMenu);
         }
         currentCreationMenu = null;
-    }
-
-    public void PushActionToHistory(string action)
-    {
-        historyStack.Add(action);
-    }
-    
-    public void UndoHistoryAction()
-    {
-        if (historyStack.Count <= 0)
-        {
-            return;
-        }
-
-        string currAction = historyStack[historyStack.Count - 1];
-        historyStack.RemoveAt(historyStack.Count - 1);
-
-        //TODO: add undo
     }
 }
