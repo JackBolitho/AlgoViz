@@ -2,11 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using System.Diagnostics.Tracing;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using System.Diagnostics;
-using Unity.VisualScripting;
 
 public class Vertex : MonoBehaviour
 {
@@ -81,6 +78,7 @@ public class Vertex : MonoBehaviour
         foreach (Vertex child in children)
         {
             GameObject arrow = Instantiate(lineArrowPrefab);
+            arrow.transform.SetParent(treeBuilder.transform);
             arrowsToChildren.Add(arrow.GetComponent<Arrow>());
         }
     }
@@ -238,7 +236,7 @@ public class Vertex : MonoBehaviour
             {
                 parentYOffset = backdropTransform.rect.height / 2f;
             }
-            Vector3 parentPos = new Vector3(transform.position.x, transform.position.y - parentYOffset, transform.position.z);
+            Vector3 parentPos = new Vector3(transform.localPosition.x, transform.localPosition.y - parentYOffset, transform.position.z);
 
             // Get the Backdrop child GameObject of the child vertex
             RectTransform childBackdropTransform = children[i].transform.Find("Backdrop") as RectTransform;
@@ -247,7 +245,8 @@ public class Vertex : MonoBehaviour
             {
                 childYOffset = childBackdropTransform.rect.height / 2f;
             }
-            Vector3 childPos = new Vector3(children[i].transform.position.x, children[i].transform.position.y + childYOffset, children[i].transform.position.z);
+            Vector3 childPos = new Vector3(children[i].transform.localPosition.x, children[i].transform.localPosition.y + childYOffset, children[i].transform.localPosition.z);
+
             arrowsToChildren[i].DrawLine(parentPos, childPos);
         }
     }

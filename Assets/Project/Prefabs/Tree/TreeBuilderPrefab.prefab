@@ -46,3 +46,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vertexPrefab: {fileID: 51297737200361792, guid: 23d30df6e28c24218b52c0178565e0f3, type: 3}
   spacing: {x: 2.4, y: 1.9}
+  backdropPrefab: {fileID: 4234727167152995069, guid: b6515e80c19a34d4580c566fb787362e, type: 3}
+  backdropPadding: {x: 1, y: 1}

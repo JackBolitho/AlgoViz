@@ -194,7 +194,6 @@ public class DPMatrixBuilder : MonoBehaviour
     private GameObject DrawArrow(Vector2 p1, Vector2 p2)
     {
         GameObject arrow = Instantiate(arrowPrefab, transform);
-        arrow.transform.localPosition = Vector3.zero;
         arrow.GetComponent<Arrow>().DrawLine(p1 , p2);
         return arrow;
     }

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Data.Common;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -33,6 +33,7 @@ public class TreeBuilder : MonoBehaviour
 {
     [SerializeField] private GameObject vertexPrefab;
     [SerializeField] private Vector2 spacing;
+    [SerializeField] private GameObject backdropPrefab;
     private Vector3 startPosition;
     private Vertex treeHead;
 
@@ -40,6 +41,12 @@ public class TreeBuilder : MonoBehaviour
     private List<int> A;
     private int B;
     private TreeElement[,] F;
+
+    //visuals
+    [SerializeField] private Vector2 backdropPadding;
+    private Vector3 backdropGoalPosition;
+    private Vector3 backdropGoalScale;
+    private RectTransform backdropRectTransform;
 
 
     public void CreateTree(List<int> A, int B, Vector3 startPosition)
@@ -51,7 +58,70 @@ public class TreeBuilder : MonoBehaviour
         this.B = B;
         F = SubsetSum();
 
+        CreateBackdrop();
         CreateTreeHead(F[A.Count, B]);
+    }
+
+    private GameObject backdrop;
+    private void CreateBackdrop()
+    {
+        float nodeWidth = 2f; //magic numbers
+        float nodeHeight = 1.5f;
+
+        backdrop = Instantiate(backdropPrefab, transform);
+        backdropRectTransform = backdrop.GetComponent<RectTransform>();
+        backdropRectTransform.sizeDelta = new Vector2(nodeWidth, nodeHeight);
+        backdrop.transform.localPosition = new Vector2(0f, 0f);
+        backdrop.transform.SetAsFirstSibling();
+    }
+
+    private void SetBackdrop()
+    {
+        float nodeWidth = 2f;
+        float nodeHeight = 1.5f;
+        float treeWidth = maxX - minX + nodeWidth;
+        float treeHeight = maxDepth * spacing.y + nodeHeight;
+
+        backdropGoalScale = new Vector2(treeWidth + backdropPadding.x * 2f, treeHeight + backdropPadding.y * 2f);
+        backdropGoalPosition = new Vector2((maxX + minX) / 2f, (nodeHeight / 2f) - (treeHeight / 2f));
+    }
+
+    private void Update()
+    {
+        BackdropMoveToGoalPosition();
+    }
+
+    private void BackdropMoveToGoalPosition()
+    {
+        // Quadratic easing factor
+        float speed = 5f; // Adjust this value to control the speed of the movement
+        float distance = Vector3.Distance(backdrop.transform.localPosition, backdropGoalPosition);
+
+        // If the vertex is not already at the goal position
+        if (distance > 0.01f)
+        {
+            // Smoothly move the vertex towards the goal position
+            backdrop.transform.localPosition = Vector3.Lerp(backdrop.transform.localPosition, backdropGoalPosition, Time.deltaTime * speed);
+        }
+        else
+        {
+            // Snap to the goal position if close enough
+            backdrop.transform.localPosition = backdropGoalPosition;
+        }
+
+        float scaleDist = Vector3.Distance(backdropRectTransform.sizeDelta, backdropGoalScale);
+
+        // If the vertex is not already at the goal position
+        if (scaleDist > 0.01f)
+        {
+            // Smoothly move the vertex towards the goal position
+            backdropRectTransform.sizeDelta = Vector3.Lerp(backdropRectTransform.sizeDelta, backdropGoalScale, Time.deltaTime * speed);
+        }
+        else
+        {
+            // Snap to the goal position if close enough
+            backdropRectTransform.sizeDelta = backdropGoalScale;
+        }
     }
 
     public TreeElement GetTreeElement(int n, int b)
@@ -167,13 +237,18 @@ public class TreeBuilder : MonoBehaviour
         return v;
     }
 
-
+    public void DeleteVisualization()
+    {
+        Destroy(this.gameObject);
+    }
 
     //------ Reingold Tilford algorithm ------
 
     private Dictionary<Vertex, float> prelim = new();
     private Dictionary<Vertex, float> mod = new();
     private float nextX = 0;
+    private float minX, maxX = 0f;
+    private float maxDepth = 0f;
 
     public void ReformTree(Vertex root)
     {
@@ -191,11 +266,18 @@ public class TreeBuilder : MonoBehaviour
         float offsetX = desiredRootX - computedRootX;
 
         SecondPass(root, offsetX);
+
+        SetBackdrop();
     }
 
     private void FirstPass(Vertex v, int depth)
     {
         v.SetTreeDepth(depth);
+
+        if(depth > maxDepth)
+        {
+            maxDepth = depth;
+        }
 
         if (v.children == null || v.children.Count == 0)
         {
@@ -220,7 +302,18 @@ public class TreeBuilder : MonoBehaviour
         float x = prelim[v] + accMod;
         float y = startPosition.y - v.GetTreeDepth() * spacing.y;
 
-        v.SetGoalPosition(new Vector3(startPosition.x + x, y, 0f));
+        float worldX = startPosition.x + x;
+        v.SetGoalPosition(new Vector3(worldX, y, 0f));
+
+        //set extremes
+        if (worldX > maxX)
+        {
+            maxX = worldX;
+        }
+        if(worldX < minX)
+        {
+            minX = worldX;
+        }
 
         if (v.children != null)
         {

@@ -10,6 +10,8 @@ public class Arrow : MonoBehaviour
 
     public void DrawLine(Vector3 start, Vector3 end)
     {
+        transform.localPosition = Vector3.zero;
+        
         Vector3 delta = end - start;
         Vector3 n_delta = delta / delta.magnitude;
         Vector3 lineEnd = end - n_delta * (tip.transform.localScale.y / 2);
