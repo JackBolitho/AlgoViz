@@ -19,13 +19,18 @@ public class CreationMenu : MonoBehaviour
     [SerializeField] private GameObject dragableBackdrop;
     [SerializeField] private GameObject dPMatrixBuilderPrefab;
     [SerializeField] private GameObject treeBuilderPrefab;
-    private GameObject worldCanvas;
+
+    //input restrictions
+    [SerializeField] private int maxB;
+    [SerializeField] private int maxALength;
+
+    private GameObject visualizationParent;
 
     // Start is called before the first frame update
     void Awake()
     {
         navigator = GameObject.Find("Navigator").GetComponent<Navigator>();
-        worldCanvas = GameObject.Find("WorldCanvas");
+        visualizationParent = GameObject.Find("Visualizations");
     }
 
     private List<int> ParseArray(string arrayText)
@@ -46,7 +51,7 @@ public class CreationMenu : MonoBehaviour
                 currVal = "";
             }
         }
-        
+
         if (currVal.Length > 0)
         {
             int newVal = int.Parse(currVal);
@@ -63,7 +68,7 @@ public class CreationMenu : MonoBehaviour
 
         //try to get array values
         List<int> arrayValues = ParseArray(arrayText);
-        if (arrayValues.Count == 0)
+        if (arrayValues.Count == 0 || arrayValues.Count > maxALength)
         {
             return;
         }
@@ -89,7 +94,7 @@ public class CreationMenu : MonoBehaviour
         }
 
         //validate input is nonnegative
-        if (goalValue < 0)
+        if (goalValue < 0 || goalValue > maxB)
         {
             return;
         }
@@ -101,14 +106,16 @@ public class CreationMenu : MonoBehaviour
         switch (selectedText)
         {
             case "DP Matrix":
-                GameObject dPObj = Instantiate(dPMatrixBuilderPrefab, worldCanvas.transform);
-                DPMatrixBuilder dPMatrixBuilder = dPObj.GetComponent<DPMatrixBuilder>();
+                GameObject dPObj = Instantiate(dPMatrixBuilderPrefab, visualizationParent.transform);
+                DPMatrixBuilder dPMatrixBuilder = dPObj.GetComponentInChildren<DPMatrixBuilder>();
                 dPMatrixBuilder.CreateMatrix(arrayValues, goalValue, gameObject.transform.position);
+                navigator.DrawPanelFirst(dPMatrixBuilder.transform.GetChild(0).gameObject);
                 break;
             case "Decision Tree":
-                GameObject treeObj = Instantiate(treeBuilderPrefab, worldCanvas.transform);
-                TreeBuilder treeBuilder = treeObj.GetComponent<TreeBuilder>();
+                GameObject treeObj = Instantiate(treeBuilderPrefab, visualizationParent.transform);
+                TreeBuilder treeBuilder = treeObj.GetComponentInChildren<TreeBuilder>();
                 treeBuilder.CreateTree(arrayValues, goalValue, gameObject.transform.position);
+                navigator.DrawPanelFirst(treeBuilder.transform.GetChild(0).gameObject);
                 break;
             default:
                 break;

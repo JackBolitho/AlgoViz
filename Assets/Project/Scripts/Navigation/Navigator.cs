@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -33,9 +34,9 @@ public class Navigator : MonoBehaviour
     private GameObject currentCreationMenu = null;
 
     //deals with UI
-    private GraphicRaycaster raycaster;
     private EventSystem eventSystem;
     private PointerEventData pointerEventData;
+    private GameObject visualizationParent;
 
     void OnEnable()
     {
@@ -59,42 +60,74 @@ public class Navigator : MonoBehaviour
         zoomCamera = controls.Editor.ZoomCamera;
         canvas = GameObject.Find("WorldCanvas");
 
-        raycaster = canvas.GetComponent<GraphicRaycaster>();
+        visualizationParent = GameObject.Find("Visualizations");
         eventSystem = EventSystem.current;
     }
 
     //left click to start drag
     private void OnLeftClick(InputAction.CallbackContext context)
     {
-        //Set up the new Pointer Event
         pointerEventData = new PointerEventData(eventSystem);
-        //Set the Pointer Event Position to that of the mouse position
         pointerEventData.position = Input.mousePosition;
 
-        //Create a list of Raycast Results
+        // Gather all raycast results from all canvases
         List<RaycastResult> results = new List<RaycastResult>();
 
-        //Raycast using the Graphics Raycaster and mouse click position
-        raycaster.Raycast(pointerEventData, results);
+        // Loop through all active GraphicRaycastersvar 
+        var raycasters = FindObjectsOfType<GraphicRaycaster>()
+    .OrderByDescending(rc => rc.GetComponentInParent<Canvas>().sortingOrder)
+    .ToList();
 
-        //get world position relative to mouse
+        foreach (GraphicRaycaster rc in raycasters)
+        {
+            List<RaycastResult> tempResults = new List<RaycastResult>();
+            rc.Raycast(pointerEventData, tempResults);
+            results.AddRange(tempResults);
+        }
+
+        // Sort results by distance (important!)
+        results.Sort((r1, r2) => r1.distance.CompareTo(r2.distance));
+
+        // Get world position relative to mouse
         Vector2 mousePos = context.ReadValue<Vector2>();
         Vector2 worldPos = Camera.main.ScreenToWorldPoint(mousePos);
 
-        //check for draggable backdrop
-        if(results.Count > 0)
+        if (results.Count > 0)
         {
             GameObject hitObj = results[0].gameObject;
+
             if (hitObj.name.Contains("Draggable"))
             {
                 draggingObject = hitObj.transform.parent.gameObject;
-                draggingObjectOffset = new Vector2(draggingObject.transform.position.x - worldPos.x, draggingObject.transform.position.y - worldPos.y);
-                draggingObject.transform.SetAsLastSibling();
+                draggingObjectOffset = new Vector2(
+                    draggingObject.transform.position.x - worldPos.x,
+                    draggingObject.transform.position.y - worldPos.y
+                );
+
+                DrawPanelFirst(draggingObject);
             }
         }
         else
         {
             StartDragScreen(worldPos);
+        }
+    }
+    
+    public void DrawPanelFirst(GameObject panel)
+    {
+        //get canvas of visualization anchor
+        panel.transform.parent.SetAsLastSibling();
+
+        //iterate through every canvas
+        foreach (Canvas canvas in visualizationParent.GetComponentsInChildren<Canvas>())
+        {
+            canvas.sortingOrder = canvas.transform.GetSiblingIndex();
+
+            //set all the arrows to the correct sort order
+            foreach (Arrow arrow in canvas.GetComponentsInChildren<Arrow>())
+            {
+                arrow.SetSortOrder(canvas.transform.GetSiblingIndex() + 1);
+            }
         }
     }
 
@@ -107,8 +140,9 @@ public class Navigator : MonoBehaviour
 
         //create creation menu
         NullifyCurrentCreationMenu();
-        currentCreationMenu = Instantiate(creationMenuPrefab, canvas.transform);
+        currentCreationMenu = Instantiate(creationMenuPrefab, visualizationParent.transform);
         currentCreationMenu.transform.position = worldPos;
+        DrawPanelFirst(currentCreationMenu.transform.GetChild(0).gameObject);
     }
 
     private void StartDragScreen(Vector2 worldPos)

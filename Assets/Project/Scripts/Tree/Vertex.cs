@@ -247,6 +247,7 @@ public class Vertex : MonoBehaviour
             }
             Vector3 childPos = new Vector3(children[i].transform.localPosition.x, children[i].transform.localPosition.y + childYOffset, children[i].transform.localPosition.z);
 
+            arrowsToChildren[i].SetSortOrder(transform.parent.parent.GetComponent<Canvas>().sortingOrder + 1);
             arrowsToChildren[i].DrawLine(parentPos, childPos);
         }
     }

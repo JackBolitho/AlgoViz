@@ -193,9 +193,11 @@ public class DPMatrixBuilder : MonoBehaviour
     //arrow base at p1, arrow head at p2
     private GameObject DrawArrow(Vector2 p1, Vector2 p2)
     {
-        GameObject arrow = Instantiate(arrowPrefab, transform);
-        arrow.GetComponent<Arrow>().DrawLine(p1 , p2);
-        return arrow;
+        GameObject arrowObj = Instantiate(arrowPrefab, transform);
+        Arrow arrow = arrowObj.GetComponent<Arrow>();
+        arrow.DrawLine(p1, p2);
+        arrow.SetSortOrder(transform.parent.GetComponent<Canvas>().sortingOrder + 1);
+        return arrowObj;
     }
 
     public void HideAllArrows()
@@ -312,7 +314,7 @@ public class DPMatrixBuilder : MonoBehaviour
     public void DeleteVisualization()
     {
         DeleteSubproblemArrows();
-        Destroy(this.gameObject);
+        Destroy(transform.parent.gameObject);
     }
     
     public void DeleteSubproblemArrows()

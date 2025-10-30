@@ -239,7 +239,7 @@ public class TreeBuilder : MonoBehaviour
 
     public void DeleteVisualization()
     {
-        Destroy(this.gameObject);
+        Destroy(transform.parent.gameObject);
     }
 
     //------ Reingold Tilford algorithm ------
