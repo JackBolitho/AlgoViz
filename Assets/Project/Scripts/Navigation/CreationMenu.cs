@@ -7,6 +7,7 @@ using System.Security;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Unity.VisualScripting;
 
 public class CreationMenu : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class CreationMenu : MonoBehaviour
 
     //visualization components
     private Navigator navigator;
+    private Animator animator;
     [SerializeField] private GameObject dragableBackdrop;
     [SerializeField] private GameObject dPMatrixBuilderPrefab;
     [SerializeField] private GameObject treeBuilderPrefab;
@@ -31,6 +33,14 @@ public class CreationMenu : MonoBehaviour
     {
         navigator = GameObject.Find("Navigator").GetComponent<Navigator>();
         visualizationParent = GameObject.Find("Visualizations");
+        animator = GetComponent<Animator>();
+        StartCoroutine(QueueAnimation());
+    }
+
+    private IEnumerator QueueAnimation()
+    {
+        yield return new WaitForEndOfFrame();
+        animator.SetTrigger("OnCreation");
     }
 
     private List<int> ParseArray(string arrayText)

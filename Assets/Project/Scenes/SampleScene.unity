@@ -429,7 +429,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Left click to use creation menu.
+  m_text: Right click to use creation menu.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6534363e564ef443690b02e55b822e6f, type: 2}
   m_sharedMaterial: {fileID: 6967341997184742994, guid: 6534363e564ef443690b02e55b822e6f, type: 2}
