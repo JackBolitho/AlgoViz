@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class Element : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
@@ -12,16 +13,18 @@ public class Element : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     //element values
     private int nval;
     private int bval;
+    public int val { private set; get; }
 
     public void SetDPMatrixBuilder(DPMatrixBuilder dPMatrixBuilder)
     {
         this.dPMatrixBuilder = dPMatrixBuilder;
     }
 
-    public void SetElementValues(int nval, int bval)
+    public void SetElementValues(int nval, int bval, int val)
     {
         this.nval = nval;
         this.bval = bval;
+        this.val = val;
     }
 
     public void InitializeArrows(GameObject parent, GameObject arrow)
@@ -67,6 +70,8 @@ public class Element : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             ShowArrows();
             parent.ShowArrows();
         }
+
+        dPMatrixBuilder.HighlightLabels(nval, bval);
     }
 
     public void OnPointerExit(PointerEventData eventData)

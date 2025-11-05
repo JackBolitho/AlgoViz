@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using TMPro;
+using Unity.XR.OpenVR;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DPMatrixBuilder : MonoBehaviour
 {
@@ -27,6 +29,8 @@ public class DPMatrixBuilder : MonoBehaviour
 
     //deals with sub problem arrows
     private List<GameObject> subproblemArrows = new List<GameObject>();
+    private List<GameObject> nLabels = new List<GameObject>();
+    private List<GameObject> bLabels = new List<GameObject>();
 
     //parameters given by the algorithm
     private List<int> A;
@@ -35,6 +39,14 @@ public class DPMatrixBuilder : MonoBehaviour
 
     //visuals
     [SerializeField] private Vector2 backdropPadding;
+    [SerializeField] private Color validHighlightColor;
+    [SerializeField] private Color validArrowColor;
+    [SerializeField] private Color invalidHighlightColor;
+    [SerializeField] private Color invalidArrowColor;
+
+    //label visuals
+    [SerializeField] private Color labelHighlight;
+    [SerializeField] private Color labelNoHiglight;
 
     public void CreateMatrix(List<int> A, int B, Vector3 popupPosition)
     {
@@ -80,19 +92,22 @@ public class DPMatrixBuilder : MonoBehaviour
         //base cases
         for (int m = 0; m < A.Count + 1; m++)
         {
+            GameObject label;
             if (m == 0)
             {
-                CreateLabel("ø", new Vector2(elementSpacing.x * m, elementSpacing.y));
+                label = CreateLabel("ø", new Vector2(elementSpacing.x * m, elementSpacing.y));
             }
             else
             {
-                CreateLabel(A[m - 1].ToString(), new Vector2(elementSpacing.x * m, elementSpacing.y));
+                label = CreateLabel(A[m - 1].ToString(), new Vector2(elementSpacing.x * m, elementSpacing.y));
             }
+            nLabels.Add(label);
             yield return new WaitForSeconds(elementWriteWait);
         }
         for (int b = 0; b < B + 1; b++)
         {
-            CreateLabel(b.ToString(), new Vector2(-elementSpacing.x, -elementSpacing.y * b));
+            GameObject label = CreateLabel(b.ToString(), new Vector2(-elementSpacing.x, -elementSpacing.y * b));
+            bLabels.Add(label);
             yield return new WaitForSeconds(elementWriteWait/2f);
         }
     }  
@@ -151,11 +166,19 @@ public class DPMatrixBuilder : MonoBehaviour
     {
         GameObject element = Instantiate(elementPrefab, transform);
         element.GetComponentInChildren<TextMeshProUGUI>().text = val.ToString();
+        Button button = element.GetComponent<Button>();
+
+        //set color on element
+        ColorBlock cb = button.colors;
+        cb.highlightedColor = val == 1 ? validHighlightColor : invalidHighlightColor;
+        cb.selectedColor = val == 1 ?  validHighlightColor : invalidHighlightColor;
+        button.colors = cb;
+
         element.transform.localPosition = pos + startPosition;
 
         Element elem = element.GetComponent<Element>();
         elem.SetDPMatrixBuilder(this);
-        elem.SetElementValues(n, b);
+        elem.SetElementValues(n, b, val);
 
         if (arrowDist is not null)
         {
@@ -191,11 +214,11 @@ public class DPMatrixBuilder : MonoBehaviour
     }
 
     //arrow base at p1, arrow head at p2
-    private GameObject DrawArrow(Vector2 p1, Vector2 p2)
+    private GameObject DrawArrow(Vector2 p1, Vector2 p2, Color color)
     {
         GameObject arrowObj = Instantiate(arrowPrefab, transform);
         Arrow arrow = arrowObj.GetComponent<Arrow>();
-        arrow.DrawLine(p1, p2);
+        arrow.DrawLine(p1, p2, color);
         arrow.SetSortOrder(transform.parent.GetComponent<Canvas>().sortingOrder + 1);
         return arrowObj;
     }
@@ -300,13 +323,15 @@ public class DPMatrixBuilder : MonoBehaviour
     {
         if (includeParent != null)
         {
-            GameObject arrow = DrawArrow(element.transform.localPosition, includeParent.transform.localPosition);
+            Color color = includeParent.val == 1 ? validArrowColor : invalidArrowColor;
+            GameObject arrow = DrawArrow(element.transform.localPosition, includeParent.transform.localPosition, color);
             subproblemArrows.Add(arrow);
         }
 
         if (excludeParent != null)
         {
-            GameObject arrow = DrawArrow(element.transform.localPosition, excludeParent.transform.localPosition);
+            Color color = excludeParent.val == 1 ? validArrowColor : invalidArrowColor;
+            GameObject arrow = DrawArrow(element.transform.localPosition, excludeParent.transform.localPosition, color);
             subproblemArrows.Add(arrow);
         }
     }
@@ -316,7 +341,7 @@ public class DPMatrixBuilder : MonoBehaviour
         DeleteSubproblemArrows();
         Destroy(transform.parent.gameObject);
     }
-    
+
     public void DeleteSubproblemArrows()
     {
         foreach (GameObject obj in subproblemArrows)
@@ -325,4 +350,24 @@ public class DPMatrixBuilder : MonoBehaviour
         }
         subproblemArrows = new List<GameObject>();
     }
+
+    public void HighlightLabels(int n, int b)
+    {
+        //clear all labels
+        for (int i = 0; i < nLabels.Count; i++)
+        {
+            SetLabelColor(nLabels[i], i <= n ? labelHighlight : labelNoHiglight);
+        }
+
+        for (int i = 0; i < bLabels.Count; i++)
+        {
+            SetLabelColor(bLabels[i], labelNoHiglight);
+        }
+        SetLabelColor(bLabels[b], labelHighlight);
+    }
+    
+    private void SetLabelColor(GameObject label, Color color)
+    {
+        label.GetComponentInChildren<TextMeshProUGUI>().color = color;
+    }   
 }

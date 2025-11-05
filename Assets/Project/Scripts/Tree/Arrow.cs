@@ -8,9 +8,12 @@ public class Arrow : MonoBehaviour
     [SerializeField] private GameObject tip;
     [SerializeField] private LineRenderer lineRenderer;
 
-    public void DrawLine(Vector3 start, Vector3 end)
+    public void DrawLine(Vector3 start, Vector3 end, Color color)
     {
         transform.localPosition = Vector3.zero;
+        lineRenderer.startColor = color;
+        lineRenderer.endColor = color;
+        tip.GetComponent<SpriteRenderer>().color = color;
 
         Vector3 delta = end - start;
         Vector3 n_delta = delta / delta.magnitude;

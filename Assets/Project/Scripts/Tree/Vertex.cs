@@ -25,6 +25,11 @@ public class Vertex : MonoBehaviour
     [SerializeField] private TextMeshProUGUI coverText;
     [SerializeField] private GameObject lineArrowPrefab;
 
+    //visuals
+    [SerializeField] private Color arrowColor;
+    [SerializeField] private Color validColor;
+    [SerializeField] private Color invalidColor;
+
     //must be called when vertex is being instantiated
     public void InitializeVertex(TreeBuilder treeBuilder, TreeElement element, Vertex parent)
     {
@@ -119,13 +124,13 @@ public class Vertex : MonoBehaviour
             if (element.value == 0)
             {
                 coverText.text = GetSubsetStr() + " is invalid.";
-                SetVertexColor(new Color(1f, 0.7f, 0.7f, 1f)); //light red
+                SetVertexColor(invalidColor); //light red
             }
             //show text when subset
             else
             {
                 coverText.text = GetSubsetStr() + " is valid!";
-                SetVertexColor(new Color(0.7f, 1f, 0.7f, 1f)); //light green
+                SetVertexColor(validColor); //light green
             }
         }
         else
@@ -248,7 +253,7 @@ public class Vertex : MonoBehaviour
             Vector3 childPos = new Vector3(children[i].transform.localPosition.x, children[i].transform.localPosition.y + childYOffset, children[i].transform.localPosition.z);
 
             arrowsToChildren[i].SetSortOrder(transform.parent.parent.GetComponent<Canvas>().sortingOrder + 1);
-            arrowsToChildren[i].DrawLine(parentPos, childPos);
+            arrowsToChildren[i].DrawLine(parentPos, childPos, arrowColor);
         }
     }
 }

@@ -57,6 +57,12 @@ MonoBehaviour:
   elementSpacing: {x: 1.1, y: 1.1, z: 0}
   elementWriteWait: 0.2
   backdropPadding: {x: 3, y: 1}
+  validHighlightColor: {r: 0.7, g: 1, b: 0.7, a: 1}
+  validArrowColor: {r: 0.124154516, g: 0.5849056, b: 0.124154516, a: 1}
+  invalidHighlightColor: {r: 1, g: 0.7, b: 0.7, a: 1}
+  invalidArrowColor: {r: 0.6415094, g: 0.11196155, b: 0.11196155, a: 1}
+  labelHighlight: {r: 1, g: 0.8844185, b: 0.23113209, a: 1}
+  labelNoHiglight: {r: 0.7372549, g: 0.7372549, b: 0.7372549, a: 1}
 --- !u!1 &2773369600234288580
 GameObject:
   m_ObjectHideFlags: 0
