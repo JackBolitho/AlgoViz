@@ -1,6 +1,3 @@
-using System.Collections;
-using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Arrow : MonoBehaviour

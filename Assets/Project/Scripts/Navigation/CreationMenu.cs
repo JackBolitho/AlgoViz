@@ -118,8 +118,14 @@ public class CreationMenu : MonoBehaviour
             case "DP Matrix":
                 GameObject dPObj = Instantiate(dPMatrixBuilderPrefab, visualizationParent.transform);
                 DPMatrixBuilder dPMatrixBuilder = dPObj.GetComponentInChildren<DPMatrixBuilder>();
-                dPMatrixBuilder.CreateMatrix(arrayValues, goalValue, gameObject.transform.position);
+                dPMatrixBuilder.CreateMatrix(arrayValues, goalValue, gameObject.transform.position, false);
                 navigator.DrawPanelFirst(dPMatrixBuilder.transform.GetChild(0).gameObject);
+                break;
+            case "DP Matrix with Tree":
+                GameObject dPWithTreeObj = Instantiate(dPMatrixBuilderPrefab, visualizationParent.transform);
+                DPMatrixBuilder dPMatrixBuilderWithTree = dPWithTreeObj.GetComponentInChildren<DPMatrixBuilder>();
+                dPMatrixBuilderWithTree.CreateMatrix(arrayValues, goalValue, gameObject.transform.position, true);
+                navigator.DrawPanelFirst(dPMatrixBuilderWithTree.transform.GetChild(0).gameObject);
                 break;
             case "Decision Tree":
                 GameObject treeObj = Instantiate(treeBuilderPrefab, visualizationParent.transform);

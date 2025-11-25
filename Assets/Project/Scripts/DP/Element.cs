@@ -2,13 +2,13 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Element : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class Element : MonoBehaviour, IPointerEnterHandler
 {
     private DPMatrixBuilder dPMatrixBuilder;
     private GameObject arrow;
     private Element parent;
-    private Element excludeParent;
-    private Element includeParent;
+    public Element excludeChild {private set; get;}
+    public Element includeChild {private set; get;}
 
     //element values
     private int nval;
@@ -36,15 +36,15 @@ public class Element : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         }
     }
 
-    public void InitializeSubproblems(GameObject excludeParent, GameObject includeParent)
+    public void InitializeSubproblems(GameObject excludeChild, GameObject includeChild)
     {
-        if (excludeParent != null)
+        if (excludeChild != null)
         {
-            this.excludeParent = excludeParent.GetComponent<Element>();
+            this.excludeChild = excludeChild.GetComponent<Element>();
         }
-        if (includeParent != null)
+        if (includeChild != null)
         {
-            this.includeParent = includeParent.GetComponent<Element>();
+            this.includeChild = includeChild.GetComponent<Element>();
         }
     }
 
@@ -63,30 +63,18 @@ public class Element : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        dPMatrixBuilder.HideAllArrows();
         dPMatrixBuilder.ShowElementPopup(nval, bval);
-        if (parent != null)
-        {
-            ShowArrows();
-            parent.ShowArrows();
-        }
-
         dPMatrixBuilder.HighlightLabels(nval, bval);
     }
 
-    public void OnPointerExit(PointerEventData eventData)
+    public void OnElementClick()
     {
-        // Called when the mouse pointer exits the object
-        dPMatrixBuilder.HideAllArrows();
-    }
-
-    public void ShowSubproblemArrows()
-    {
-        dPMatrixBuilder.ShowSubproblemArrows(this, includeParent, excludeParent);
+        dPMatrixBuilder.ShowSubproblemArrows(this, includeChild, excludeChild);
+        dPMatrixBuilder.OnElementClick(this);
     }
 
     public bool IsBaseCase()
     {
-        return includeParent == null && excludeParent == null;
+        return includeChild == null && excludeChild == null;
     }
 }

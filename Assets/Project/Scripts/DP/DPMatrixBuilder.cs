@@ -48,7 +48,12 @@ public class DPMatrixBuilder : MonoBehaviour
     [SerializeField] private Color labelHighlight;
     [SerializeField] private Color labelNoHiglight;
 
-    public void CreateMatrix(List<int> A, int B, Vector3 popupPosition)
+    //deals with tree construction
+    private bool usesDAG;
+    [SerializeField] private GameObject dAGBuilderPrefab;
+    private DAGBuilder dAGBuilder = null;
+
+    public void CreateMatrix(List<int> A, int B, Vector3 popupPosition, bool usesDAG)
     {
         transform.position = popupPosition;
         this.startPosition = -new Vector3(A.Count / 2f * elementSpacing.x, distanceFromPopupToViz);
@@ -60,6 +65,7 @@ public class DPMatrixBuilder : MonoBehaviour
 
         this.A = A;
         this.B = B;
+        this.usesDAG = usesDAG;
         AddBackdrop();
         DrawLabels();
         StartCoroutine(CreateMatrixImpl());
@@ -282,7 +288,7 @@ public class DPMatrixBuilder : MonoBehaviour
                     subsetStr += "}";
                 }
                 string strB = B.ToString();
-                msg = "A subset of \n" + arrayStr + "\nthat sums to " + strB + " is \n" + subsetStr + ".";
+                msg = "There is a way to get " + strB + " from\n" + arrayStr + ".\nClick to see how!";
             }
         }
         popupText.text = msg;
@@ -319,22 +325,24 @@ public class DPMatrixBuilder : MonoBehaviour
         return S;
     }
 
-    public void ShowSubproblemArrows(Element element, Element includeParent, Element excludeParent)
+    //show the include/exclude arrows as applicable
+    public void ShowSubproblemArrows(Element element, Element includeChild, Element excludeChild)
     {
-        if (includeParent != null)
+        if (includeChild != null)
         {
-            Color color = includeParent.val == 1 ? validArrowColor : invalidArrowColor;
-            GameObject arrow = DrawArrow(element.transform.localPosition, includeParent.transform.localPosition, color);
+            Color color = includeChild.val == 1 ? validArrowColor : invalidArrowColor;
+            GameObject arrow = DrawArrow(element.transform.localPosition, includeChild.transform.localPosition, color);
             subproblemArrows.Add(arrow);
         }
 
-        if (excludeParent != null)
+        if (excludeChild != null)
         {
-            Color color = excludeParent.val == 1 ? validArrowColor : invalidArrowColor;
-            GameObject arrow = DrawArrow(element.transform.localPosition, excludeParent.transform.localPosition, color);
+            Color color = excludeChild.val == 1 ? validArrowColor : invalidArrowColor;
+            GameObject arrow = DrawArrow(element.transform.localPosition, excludeChild.transform.localPosition, color);
             subproblemArrows.Add(arrow);
         }
     }
+
 
     public void DeleteVisualization()
     {
@@ -365,9 +373,24 @@ public class DPMatrixBuilder : MonoBehaviour
         }
         SetLabelColor(bLabels[b], labelHighlight);
     }
-    
+
     private void SetLabelColor(GameObject label, Color color)
     {
         label.GetComponentInChildren<TextMeshProUGUI>().color = color;
     }   
+    
+    public void OnElementClick(Element e)
+    {
+        if (usesDAG)
+        {
+            //the first time the DAG is constructed 
+            if(dAGBuilder == null)
+            {
+                GameObject obj = Instantiate(dAGBuilderPrefab);
+                obj.transform.SetParent(transform);
+                dAGBuilder = obj.GetComponentInChildren<DAGBuilder>();
+            }
+            dAGBuilder.AddToDAGVisualization(e);  
+        }
+    }
 }
