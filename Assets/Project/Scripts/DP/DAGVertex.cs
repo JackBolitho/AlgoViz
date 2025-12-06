@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Data.Common;
 using TMPro;
 using UnityEngine;
 
@@ -8,20 +9,24 @@ public class DAGVertex : MonoBehaviour
     [SerializeField] private Vector3 goalPosition;
     private string text;
     [HideInInspector] public List<DAGVertex> children = new List<DAGVertex>();
-    private List<Arrow> arrowsToChildren = new List<Arrow>();
-    [SerializeField] private Color arrowColor;
+    private List<Arrow> arrowsToChildren;
+    [SerializeField] private Color includeColor;
+    [SerializeField] private Color excludeColor;
     [SerializeField] private GameObject lineArrowPrefab;
     private DAGBuilder dAGBuilder;
+    public Element element {private get; set;}
+
  
-    public void SetDAGVertex(string text, DAGVertex includeChild, DAGVertex excludeChild)
+    public void SetDAGVertex(string text, DAGVertex includeChild, DAGVertex excludeChild, DAGBuilder dAGBuilder, Element element)
     {
+        this.dAGBuilder = dAGBuilder;
         this.text = text;
+        this.element = element;
         vertexText.text = text;
 
+        arrowsToChildren = new List<Arrow>();
         children.Add(includeChild);
         children.Add(excludeChild);
-
-        /*
 
         foreach (DAGVertex child in children)
         {
@@ -35,10 +40,8 @@ public class DAGVertex : MonoBehaviour
             {
                 arrowsToChildren.Add(null);
             }
-        }*/
+        }
     }
-
-    /*
 
     public void SetGoalPosition(Vector3 pos)
     {
@@ -68,7 +71,10 @@ public class DAGVertex : MonoBehaviour
             transform.localPosition = goalPosition;
         }
 
-        DrawLine();
+        if(transform.GetChild(0).gameObject.activeSelf)
+        {
+            DrawLine();
+        }
     }
 
     private void DrawLine()
@@ -78,7 +84,7 @@ public class DAGVertex : MonoBehaviour
             if(children[i] != null)
             {
                 // Get the Backdrop child GameObject of this vertex
-                RectTransform backdropTransform = transform.Find("Backdrop") as RectTransform;
+                RectTransform backdropTransform = transform.GetChild(0).Find("Backdrop") as RectTransform;
                 float parentYOffset = 0f;
                 if (backdropTransform != null)
                 {
@@ -87,17 +93,33 @@ public class DAGVertex : MonoBehaviour
                 Vector3 parentPos = new Vector3(transform.localPosition.x, transform.localPosition.y - parentYOffset, transform.position.z);
 
                 // Get the Backdrop child GameObject of the child vertex
-                RectTransform childBackdropTransform = children[i].transform.Find("Backdrop") as RectTransform;
                 float childYOffset = 0f;
-                if (childBackdropTransform != null)
+                if(children[i].transform.GetChild(0).gameObject.activeSelf)
                 {
-                    childYOffset = childBackdropTransform.rect.height / 2f;
+                    RectTransform childBackdropTransform = children[i].transform.GetChild(0).Find("Backdrop") as RectTransform;
+                    childYOffset = 0f;
+                    if (childBackdropTransform != null)
+                    {
+                        childYOffset = childBackdropTransform.rect.height / 2f;
+                    }
+                }
+                else
+                {
+                    childYOffset = 0.75f;
                 }
                 Vector3 childPos = new Vector3(children[i].transform.localPosition.x, children[i].transform.localPosition.y + childYOffset, children[i].transform.localPosition.z);
 
                 arrowsToChildren[i].SetSortOrder(transform.parent.parent.GetComponent<Canvas>().sortingOrder + 1);
-                arrowsToChildren[i].DrawLine(parentPos, childPos, arrowColor);
+
+                if(children[i].element != null && children[i].element.val == 1)
+                {
+                    arrowsToChildren[i].DrawLine(parentPos, childPos, includeColor);
+                }
+                else
+                {
+                    arrowsToChildren[i].DrawLine(parentPos, childPos, excludeColor);
+                }
             }
         }
-    }*/
+    }
 }
