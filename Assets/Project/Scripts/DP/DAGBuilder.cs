@@ -54,8 +54,14 @@ public class DAGBuilder : MonoBehaviour
 
     private void AddToClickableSet(Element e)
     {
-        e.GetComponent<Animator>().SetBool("IsSelectable", true);
         clickableSet.Add(e);
+
+        foreach(Element el in clickableSet)
+        {
+            Animator animator = el.GetComponent<Animator>();
+            animator.SetBool("IsSelectable", true);
+            animator.Play(animator.GetCurrentAnimatorStateInfo(0).fullPathHash, 0, 0f);
+        }
     }
 
     private void RemoveFromClickableSet(Element e)
