@@ -52,10 +52,30 @@ public class DAGBuilder : MonoBehaviour
         }
     }
 
+    private void AddToClickableSet(Element e)
+    {
+        e.GetComponent<Animator>().SetBool("IsSelectable", true);
+        clickableSet.Add(e);
+    }
+
+    private void RemoveFromClickableSet(Element e)
+    {
+        e.GetComponent<Animator>().SetBool("IsSelectable", false);
+        clickableSet.Remove(e);
+    }
+
+    public void RemoveAllFromClickableSet()
+    {
+        foreach(Element e in clickableSet)
+        {
+            e.GetComponent<Animator>().SetBool("IsSelectable", false);
+        }
+    }
+
     //creates the vertex for the DAG and creates all ghosts
     private void CreateDAGVertex(Element e)
     {
-        clickableSet.Remove(e);
+        RemoveFromClickableSet(e);
 
         if(e.includeChild != null)
         {
@@ -105,7 +125,7 @@ public class DAGBuilder : MonoBehaviour
 
                 //hide it and pair it
                 vertexObj.transform.GetChild(0).gameObject.SetActive(false);
-                clickableSet.Add(e);
+                AddToClickableSet(e);
                 vertex.SetDAGVertex("I am a vertex", null, null, this, e);
             }
 
@@ -310,5 +330,10 @@ public class DAGBuilder : MonoBehaviour
 
         backdropGoalScale = new Vector2(treeWidth + backdropPadding.x * 2f, treeHeight + backdropPadding.y * 2f);
         backdropGoalPosition = new Vector2(0, (nodeHeight / 2f) - (treeHeight / 2f));
+    }
+
+    private void OnDestroy()
+    {
+        RemoveAllFromClickableSet();
     }
 }
