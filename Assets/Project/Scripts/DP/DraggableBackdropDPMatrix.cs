@@ -5,10 +5,9 @@ using UnityEngine;
 public class DraggableBackdropDPMatrix : MonoBehaviour
 {
     private DPMatrixBuilder builder;
-
-    private void Start()
+    public void SetBuilder(DPMatrixBuilder builder)
     {
-        builder = GetComponentInParent<DPMatrixBuilder>();
+        this.builder = builder;
     }
 
     public void DeleteVisualization()

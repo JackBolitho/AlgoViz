@@ -50,7 +50,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dAGVertexPrefab: {fileID: 51297737200361792, guid: c0f073f72f0fe49f5bdd95d1ab676f05, type: 3}
   spacing: {x: 2.5, y: 2.5}
-  backdropPrefab: {fileID: 4234727167152995069, guid: b6515e80c19a34d4580c566fb787362e, type: 3}
+  backdropPrefab: {fileID: 4234727167152995069, guid: ec0455cf54ef246a580c826fdc32f8a2, type: 3}
   backdropPadding: {x: 1, y: 1}
 --- !u!1 &2773369600234288580
 GameObject:

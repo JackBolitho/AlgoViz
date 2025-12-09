@@ -44,7 +44,7 @@ public class AlgorithmRunner : MonoBehaviour
     void Start()
     {
         dPMatrixBuilder = GetComponent<DPMatrixBuilder>();
-        dPMatrixBuilder.CreateMatrix(A, B, Vector3.zero, true);
+        dPMatrixBuilder.CreateMatrix(A, B, Vector3.zero, true, null);
 
         treeBuilder = GetComponent<TreeBuilder>();
         treeBuilder.CreateTree(A, B, Vector3.zero);

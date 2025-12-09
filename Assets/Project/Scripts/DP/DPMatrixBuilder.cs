@@ -26,6 +26,7 @@ public class DPMatrixBuilder : MonoBehaviour
     private List<GameObject> arrows = new List<GameObject>();
     private Vector3 startPosition;
     private GameObject[,] Fobjs;
+    private GameObject visualizationParent;
 
     //deals with sub problem arrows
     private List<GameObject> subproblemArrows = new List<GameObject>();
@@ -52,11 +53,14 @@ public class DPMatrixBuilder : MonoBehaviour
     private bool usesDAG;
     [SerializeField] private GameObject dAGBuilderPrefab;
     private DAGBuilder dAGBuilder = null;
+    private Navigator navigator;
 
-    public void CreateMatrix(List<int> A, int B, Vector3 popupPosition, bool usesDAG)
+    public void CreateMatrix(List<int> A, int B, Vector3 popupPosition, bool usesDAG, GameObject visualizationParent)
     {
         transform.position = popupPosition;
         this.startPosition = -new Vector3(A.Count / 2f * elementSpacing.x, distanceFromPopupToViz);
+        this.visualizationParent = visualizationParent;
+        navigator = GameObject.Find("Navigator").GetComponent<Navigator>();
 
         //create popup graphic
         GameObject popup = Instantiate(popupValues, transform);
@@ -88,6 +92,7 @@ public class DPMatrixBuilder : MonoBehaviour
         Vector3 scale = new Vector3(elementsWidth + backdropPadding.x, totalHeight + backdropPadding.y * 2f, 0f);
         
         GameObject backdrop = Instantiate(backdropPrefab, transform);
+        backdrop.GetComponent<DraggableBackdropDPMatrix>().SetBuilder(this);
         backdrop.GetComponent<RectTransform>().sizeDelta = new Vector2(scale.x, scale.y);
         backdrop.transform.localPosition = position;
         backdrop.transform.SetAsFirstSibling();
@@ -346,6 +351,11 @@ public class DPMatrixBuilder : MonoBehaviour
 
     public void DeleteVisualization()
     {
+        if(usesDAG && dAGBuilder != null)
+        {
+            Destroy(dAGBuilder.gameObject);
+        }
+
         DeleteSubproblemArrows();
         Destroy(transform.parent.gameObject);
     }
@@ -357,6 +367,13 @@ public class DPMatrixBuilder : MonoBehaviour
             Destroy(obj);
         }
         subproblemArrows = new List<GameObject>();
+
+        //remove dag visualization
+        if(usesDAG && dAGBuilder != null)
+        {
+            Destroy(dAGBuilder.gameObject);
+            dAGBuilder = null;
+        }
     }
 
     public void HighlightLabels(int n, int b)
@@ -386,9 +403,10 @@ public class DPMatrixBuilder : MonoBehaviour
             //the first time the DAG is constructed 
             if(dAGBuilder == null)
             {
-                GameObject obj = Instantiate(dAGBuilderPrefab);
-                obj.transform.SetParent(transform);
+                GameObject obj = Instantiate(dAGBuilderPrefab, visualizationParent.transform);
                 dAGBuilder = obj.GetComponentInChildren<DAGBuilder>();
+                dAGBuilder.SetBuilder(this);
+                navigator.DrawPanelFirst(dAGBuilder.gameObject);//.transform.GetChild(0).gameObject);
             }
             dAGBuilder.AddToDAGVisualization(e);  
         }

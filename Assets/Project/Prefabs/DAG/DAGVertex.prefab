@@ -52,8 +52,8 @@ MonoBehaviour:
   vertexText: {fileID: 397664086639299359}
   goalPosition: {x: 0, y: 0, z: 0}
   children: []
-  includeColor: {r: 0.1254902, g: 0.58431375, b: 0.1254902, a: 1}
-  excludeColor: {r: 0.6431373, g: 0.11372549, b: 0.11372549, a: 1}
+  includeColor: {r: 0.69803923, g: 1, b: 0.69803923, a: 1}
+  excludeColor: {r: 1, g: 0.69803923, b: 0.69803923, a: 1}
   lineArrowPrefab: {fileID: 861265586231275093, guid: da15afcbdcf484972bf1dd2fb9d4164a, type: 3}
 --- !u!1 &1389912136078626163
 GameObject:

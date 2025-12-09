@@ -20,6 +20,12 @@ public class DAGBuilder : MonoBehaviour
     private Vector3 backdropGoalPosition;
     private Vector3 backdropGoalScale;
     private RectTransform backdropRectTransform;
+    private DPMatrixBuilder dPMatrixBuilder;
+
+    public void SetBuilder(DPMatrixBuilder dPMatrixBuilder)
+    {
+        this.dPMatrixBuilder = dPMatrixBuilder;
+    }
 
     public void AddToDAGVisualization(Element e)
     {
@@ -288,6 +294,7 @@ public class DAGBuilder : MonoBehaviour
         float nodeHeight = 1.5f;
 
         backdrop = Instantiate(backdropPrefab, transform);
+        backdrop.GetComponent<DraggableBackdropDPMatrix>().SetBuilder(dPMatrixBuilder);
         backdropRectTransform = backdrop.GetComponent<RectTransform>();
         backdropRectTransform.sizeDelta = new Vector2(nodeWidth, nodeHeight);
         backdrop.transform.localPosition = new Vector2(0f, 0f);
