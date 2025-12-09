@@ -69,6 +69,7 @@ public class Element : MonoBehaviour, IPointerEnterHandler
 
     public void OnElementClick()
     {
+        EventSystem.current.SetSelectedGameObject(null);
         dPMatrixBuilder.ShowSubproblemArrows(this, includeChild, excludeChild);
         dPMatrixBuilder.OnElementClick(this);
     }

@@ -182,7 +182,6 @@ public class DPMatrixBuilder : MonoBehaviour
         //set color on element
         ColorBlock cb = button.colors;
         cb.highlightedColor = val == 1 ? validHighlightColor : invalidHighlightColor;
-        cb.selectedColor = val == 1 ?  validHighlightColor : invalidHighlightColor;
         button.colors = cb;
 
         element.transform.localPosition = pos + startPosition;
