@@ -75,21 +75,36 @@ public class DPMatrixBuilder : MonoBehaviour
         StartCoroutine(CreateMatrixImpl());
     }
 
-    public void AddBackdrop()
+    private float GetHeight()
     {
         float elementYScale = elementPrefab.transform.localScale.y;
         float popupYScale = 2f;
 
         float elementGap = elementSpacing.y - elementYScale;
         float elementsHeight = (elementYScale + elementGap) * (B + 1) - elementGap;
-        float elementsWidth = (elementYScale + elementGap) * (A.Count + 1) - elementGap;
 
         float popupGap = distanceFromPopupToViz - (popupYScale / 2f + elementYScale / 2f);
         float popupHeader = popupYScale + popupGap;
         float totalHeight = elementsHeight + popupHeader;
+        return totalHeight;
+    }
+
+    private float GetWidth()
+    {
+        float elementYScale = elementPrefab.transform.localScale.y;
+        float elementGap = elementSpacing.y - elementYScale;
+        float elementsWidth = (elementYScale + elementGap) * (A.Count + 1) - elementGap;
+        return elementsWidth;
+    }
+
+    public void AddBackdrop()
+    {
+        float popupYScale = 2f;
+        float totalWidth = GetWidth();
+        float totalHeight = GetHeight();
 
         Vector3 position = new Vector3(0.0f, (popupYScale / 2f) - (totalHeight / 2f), 0f);
-        Vector3 scale = new Vector3(elementsWidth + backdropPadding.x, totalHeight + backdropPadding.y * 2f, 0f);
+        Vector3 scale = new Vector3(totalWidth + backdropPadding.x, totalHeight + backdropPadding.y, 0f);
         
         GameObject backdrop = Instantiate(backdropPrefab, transform);
         backdrop.GetComponent<DraggableBackdropDPMatrix>().SetBuilder(this);
@@ -192,15 +207,6 @@ public class DPMatrixBuilder : MonoBehaviour
 
         if (arrowDist is not null)
         {
-            /*
-            if (val == 1)
-            {
-                GameObject arrow = DrawArrow(pos + startPosition, new Vector2(arrowDist.Value.x + startPosition.x, arrowDist.Value.y + startPosition.y));
-                elem.InitializeArrows(parent, arrow);
-                arrows.Add(arrow);
-                arrow.SetActive(false);
-            }*/
-
             //set which elements are the subproblem solutions
             if (A[n - 1] > b)
             {
@@ -275,22 +281,6 @@ public class DPMatrixBuilder : MonoBehaviour
             }
             else
             {
-                List<int> subset = SubsetSumRetrieval(n, B);
-
-                //construct text
-                string subsetStr = "{";
-                if (subset.Count > 0)
-                {
-                    for (int i = 0; i < subset.Count - 1; i++)
-                    {
-                        subsetStr += subset[i].ToString() + ", ";
-                    }
-                    subsetStr += subset[subset.Count - 1].ToString() + "}";
-                }
-                else
-                {
-                    subsetStr += "}";
-                }
                 string strB = B.ToString();
                 msg = "There is a way to get " + strB + " from\n" + arrayStr + ".\nClick to see how!";
             }
@@ -352,7 +342,7 @@ public class DPMatrixBuilder : MonoBehaviour
     {
         if(usesDAG && dAGBuilder != null)
         {
-            Destroy(dAGBuilder.gameObject);
+            Destroy(dAGBuilder.transform.parent.gameObject);
         }
 
         DeleteSubproblemArrows();
@@ -370,7 +360,7 @@ public class DPMatrixBuilder : MonoBehaviour
         //remove dag visualization
         if(usesDAG && dAGBuilder != null)
         {
-            Destroy(dAGBuilder.gameObject);
+            Destroy(dAGBuilder.transform.parent.gameObject);
             dAGBuilder = null;
         }
     }
@@ -404,7 +394,9 @@ public class DPMatrixBuilder : MonoBehaviour
             {
                 GameObject obj = Instantiate(dAGBuilderPrefab, visualizationParent.transform);
                 dAGBuilder = obj.GetComponentInChildren<DAGBuilder>();
-                dAGBuilder.SetBuilder(this);
+
+                Vector3 visualizationPos = new Vector3(transform.position.x + GetWidth() + backdropPadding.x, transform.position.y, 1f);
+                dAGBuilder.InitializeVisualization(this, visualizationPos);
                 navigator.DrawPanelFirst(dAGBuilder.gameObject);//.transform.GetChild(0).gameObject);
             }
             dAGBuilder.AddToDAGVisualization(e);  

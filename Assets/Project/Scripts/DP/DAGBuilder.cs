@@ -22,9 +22,10 @@ public class DAGBuilder : MonoBehaviour
     private RectTransform backdropRectTransform;
     private DPMatrixBuilder dPMatrixBuilder;
 
-    public void SetBuilder(DPMatrixBuilder dPMatrixBuilder)
+    public void InitializeVisualization(DPMatrixBuilder dPMatrixBuilder, Vector3 startPosition)
     {
         this.dPMatrixBuilder = dPMatrixBuilder;
+        transform.position = startPosition;
     }
 
     public void AddToDAGVisualization(Element e)
@@ -109,6 +110,8 @@ public class DAGBuilder : MonoBehaviour
             //set values of parent vertex, assuming that the children are deactivated and already in the dictionary
             if(parent == null)
             {
+                vertexObj.transform.position = transform.position;
+
                 DAGVertex includeChild = null;
                 if (e.includeChild != null && elementVertexPairs.ContainsKey(e.includeChild))
                 {
@@ -120,7 +123,7 @@ public class DAGBuilder : MonoBehaviour
                     excludeChild = elementVertexPairs[e.excludeChild];
                 }
 
-                vertex.SetDAGVertex("I am a vertex", includeChild, excludeChild, this, e);
+                vertex.SetDAGVertex(includeChild, excludeChild, this, e);
             }
             else
             {
@@ -128,11 +131,15 @@ public class DAGBuilder : MonoBehaviour
                 if(elementVertexPairs.ContainsKey(parent)){
                     vertex.transform.position = elementVertexPairs[parent].gameObject.transform.position;
                 }
+                else
+                {
+                    vertexObj.transform.position = transform.position;
+                }
 
                 //hide it and pair it
                 vertexObj.transform.GetChild(0).gameObject.SetActive(false);
                 AddToClickableSet(e);
-                vertex.SetDAGVertex("I am a vertex", null, null, this, e);
+                vertex.SetDAGVertex(null, null, this, e);
             }
 
             elementVertexPairs.Add(e, vertex);
@@ -155,57 +162,8 @@ public class DAGBuilder : MonoBehaviour
                     excludeChild = elementVertexPairs[e.excludeChild];
                 }
 
-                vertex.SetDAGVertex("I am a vertex", includeChild, excludeChild, this, e);
+                vertex.SetDAGVertex(includeChild, excludeChild, this, e);
                 vertex.gameObject.transform.GetChild(0).gameObject.SetActive(true);
-            }
-        }
-    }
-
-    private bool ElementIsInDAGDict(Element e)
-    {
-        return elementVertexPairs.ContainsKey(e);
-    }
-
-    //BFS starting at startVertex, and compare each value to goalVertex
-    private bool ElementIsInDAG(Element startVertex, Element goalVertex)
-    {
-        Queue<Element> elementQueue = new Queue<Element>();
-        elementQueue.Enqueue(startVertex);
-        while(elementQueue.Count > 0)
-        {
-            Element nextElement = elementQueue.Dequeue();
-            if(nextElement == goalVertex)
-            {
-                return true;
-            }
-
-            if(nextElement.includeChild != null)
-            {
-                elementQueue.Enqueue(nextElement.includeChild);
-            }
-            if(nextElement.excludeChild != null)
-            {
-                elementQueue.Enqueue(nextElement.excludeChild);
-            }
-        }
-        return false;
-    }
-    
-    private void BFS(Element startVertex)
-    {
-        Queue<Element> elementQueue = new Queue<Element>();
-        elementQueue.Enqueue(startVertex);
-        while(elementQueue.Count > 0)
-        {
-            Element nextElement = elementQueue.Dequeue();
-
-            if(nextElement.includeChild != null)
-            {
-                elementQueue.Enqueue(nextElement.includeChild);
-            }
-            if(nextElement.excludeChild != null)
-            {
-                elementQueue.Enqueue(nextElement.excludeChild);
             }
         }
     }

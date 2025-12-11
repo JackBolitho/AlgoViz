@@ -17,12 +17,10 @@ public class DAGVertex : MonoBehaviour
     public Element element {private get; set;}
 
  
-    public void SetDAGVertex(string text, DAGVertex includeChild, DAGVertex excludeChild, DAGBuilder dAGBuilder, Element element)
+    public void SetDAGVertex(DAGVertex includeChild, DAGVertex excludeChild, DAGBuilder dAGBuilder, Element element)
     {
         this.dAGBuilder = dAGBuilder;
-        this.text = text;
         this.element = element;
-        vertexText.text = text;
 
         arrowsToChildren = new List<Arrow>();
         children.Add(includeChild);
@@ -41,6 +39,17 @@ public class DAGVertex : MonoBehaviour
                 arrowsToChildren.Add(null);
             }
         }
+
+        //determine text here
+        if(element.val == 1)
+        {
+            text = "You can get target";
+        }
+        else
+        {
+            text = "You cannot get target";
+        }
+        vertexText.text = text;
     }
 
     public void SetGoalPosition(Vector3 pos)

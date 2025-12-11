@@ -56,7 +56,7 @@ MonoBehaviour:
   distanceFromPopupToViz: 3
   elementSpacing: {x: 1.1, y: 1.1, z: 0}
   elementWriteWait: 0.2
-  backdropPadding: {x: 3, y: 1}
+  backdropPadding: {x: 3, y: 2}
   validHighlightColor: {r: 0.7, g: 1, b: 0.7, a: 1}
   validArrowColor: {r: 0.124154516, g: 0.5849056, b: 0.124154516, a: 1}
   invalidHighlightColor: {r: 1, g: 0.7, b: 0.7, a: 1}

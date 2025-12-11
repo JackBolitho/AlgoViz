@@ -11,8 +11,8 @@ public class Element : MonoBehaviour, IPointerEnterHandler
     public Element includeChild {private set; get;}
 
     //element values
-    private int nval;
-    private int bval;
+    public int nval { private set; get; }
+    public int bval { private set; get; }
     public int val { private set; get; }
 
     public void SetDPMatrixBuilder(DPMatrixBuilder dPMatrixBuilder)
