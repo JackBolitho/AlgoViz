@@ -833,7 +833,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!1 &5106233149113280564
 GameObject:
   m_ObjectHideFlags: 0
@@ -1109,7 +1109,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8258394551982851629}
   m_HandleRect: {fileID: 8791786193709160398}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -1674,7 +1674,7 @@ MonoBehaviour:
     m_Options:
     - m_Text: DP Matrix
       m_Image: {fileID: 0}
-    - m_Text: DP Matrix with Tree
+    - m_Text: DP Matrix with DAG
       m_Image: {fileID: 0}
     - m_Text: Decision Tree
       m_Image: {fileID: 0}
@@ -1907,7 +1907,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
+  m_fontSize: 13
   m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 1

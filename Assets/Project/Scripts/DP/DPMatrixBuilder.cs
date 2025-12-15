@@ -288,51 +288,21 @@ public class DPMatrixBuilder : MonoBehaviour
         popupText.text = msg;
     }
 
-    //input: the DP matrix F from subset sum, the nth value (1 indexed)
-    //output: the subset that sums to b
-    private List<int> SubsetSumRetrieval(int n, int B)
-    {
-        //check if given subset sums to B
-        if (F[n, B] == 0)
-        {
-            return new List<int>();
-        }
-
-        //retrieval algorithm
-        int m = n;
-        int b = B;
-        List<int> S = new List<int>();
-        while (m > 0)
-        {
-            if (F[m - 1, b] == 1)
-            {
-                m -= 1;
-            }
-            else
-            {
-                S.Add(A[m - 1]);
-                b -= A[m - 1];
-                m -= 1;
-            }
-        }
-
-        return S;
-    }
-
     //show the include/exclude arrows as applicable
-    public void ShowSubproblemArrows(Element element, Element includeChild, Element excludeChild)
+    public void ShowSubproblemArrows(Element element)
     {
-        if (includeChild != null)
+
+        if (element.includeChild != null)
         {
-            Color color = includeChild.val == 1 ? validArrowColor : invalidArrowColor;
-            GameObject arrow = DrawArrow(element.transform.localPosition, includeChild.transform.localPosition, color);
+            Color color = element.includeChild.val == 1 ? validArrowColor : invalidArrowColor;
+            GameObject arrow = DrawArrow(element.transform.localPosition, element.includeChild.transform.localPosition, color);
             subproblemArrows.Add(arrow);
         }
 
-        if (excludeChild != null)
+        if (element.excludeChild != null)
         {
-            Color color = excludeChild.val == 1 ? validArrowColor : invalidArrowColor;
-            GameObject arrow = DrawArrow(element.transform.localPosition, excludeChild.transform.localPosition, color);
+            Color color = element.excludeChild.val == 1 ? validArrowColor : invalidArrowColor;
+            GameObject arrow = DrawArrow(element.transform.localPosition, element.excludeChild.transform.localPosition, color);
             subproblemArrows.Add(arrow);
         }
     }
@@ -399,7 +369,51 @@ public class DPMatrixBuilder : MonoBehaviour
                 dAGBuilder.InitializeVisualization(this, visualizationPos);
                 navigator.DrawPanelFirst(dAGBuilder.gameObject);//.transform.GetChild(0).gameObject);
             }
-            dAGBuilder.AddToDAGVisualization(e);  
+
+            bool showArrows = dAGBuilder.AddToDAGVisualization(e);
+            if (showArrows)
+            {
+                ShowSubproblemArrows(e);
+            }
+            else
+            {
+                DeleteSubproblemArrows();
+            }
         }
+        else
+        {
+            ShowSubproblemArrows(e);
+        }
+    }
+
+    public string GetSubsetText(int n)
+    {
+        // Clamp n to valid range
+        n = Mathf.Clamp(n, 0, A.Count);
+
+        if (n == 0)
+            return "{}";
+
+        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        sb.Append("{");
+
+        for (int i = 0; i < n; i++)
+        {
+            sb.Append(A[i]);
+            if (i < n - 1)
+                sb.Append(", ");
+        }
+
+        sb.Append("}");
+        return sb.ToString();
+    }
+
+    public string GetElementAtIndex(int n)
+    {
+        if(n > 0)
+        {
+            return A[n-1].ToString();
+        }
+        return "";
     }
 }

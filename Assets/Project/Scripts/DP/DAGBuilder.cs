@@ -20,7 +20,7 @@ public class DAGBuilder : MonoBehaviour
     private Vector3 backdropGoalPosition;
     private Vector3 backdropGoalScale;
     private RectTransform backdropRectTransform;
-    private DPMatrixBuilder dPMatrixBuilder;
+    public DPMatrixBuilder dPMatrixBuilder {get; private set;}
 
     public void InitializeVisualization(DPMatrixBuilder dPMatrixBuilder, Vector3 startPosition)
     {
@@ -28,7 +28,8 @@ public class DAGBuilder : MonoBehaviour
         transform.position = startPosition;
     }
 
-    public void AddToDAGVisualization(Element e)
+    //returns whether or not the subproblem arrows can be created
+    public bool AddToDAGVisualization(Element e)
     {
         if(head == null)
         {
@@ -49,8 +50,9 @@ public class DAGBuilder : MonoBehaviour
         //clear previous investigations
         else
         {
-            Debug.Log("Remove Investigations");
+            return false;
         }
+        return true;
     }
 
     private void AddToClickableSet(Element e)
@@ -97,7 +99,6 @@ public class DAGBuilder : MonoBehaviour
     }
 
     //creates the gameobject for the vertex, and deals with keeping track of the vertex
-    //when parent is null, 
     private void InstantiateVertexGraphic(Element e, Element parent)
     {
         //only include this vertex in the clickable set if it is not already in the DAG visualization

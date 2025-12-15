@@ -1,14 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Unity.VisualScripting;
-
 public class CreationMenu : MonoBehaviour
 {
     [SerializeField] private TMP_InputField arrayInput;
@@ -121,7 +116,7 @@ public class CreationMenu : MonoBehaviour
                 dPMatrixBuilder.CreateMatrix(arrayValues, goalValue, gameObject.transform.position, false, visualizationParent);
                 navigator.DrawPanelFirst(dPMatrixBuilder.transform.GetChild(0).gameObject);
                 break;
-            case "DP Matrix with Tree":
+            case "DP Matrix with DAG":
                 GameObject dPWithTreeObj = Instantiate(dPMatrixBuilderPrefab, visualizationParent.transform);
                 DPMatrixBuilder dPMatrixBuilderWithTree = dPWithTreeObj.GetComponentInChildren<DPMatrixBuilder>();
                 dPMatrixBuilderWithTree.CreateMatrix(arrayValues, goalValue, gameObject.transform.position, true, visualizationParent);

@@ -8,8 +8,8 @@ public class DAGVertex : MonoBehaviour
     [SerializeField] private TextMeshProUGUI vertexText;
     [SerializeField] private Vector3 goalPosition;
     private string text;
-    [HideInInspector] public List<DAGVertex> children = new List<DAGVertex>();
-    private List<Arrow> arrowsToChildren;
+    [HideInInspector] public List<DAGVertex> children;
+    private List<LabelledArrow> arrowsToChildren;
     [SerializeField] private Color includeColor;
     [SerializeField] private Color excludeColor;
     [SerializeField] private GameObject lineArrowPrefab;
@@ -22,17 +22,35 @@ public class DAGVertex : MonoBehaviour
         this.dAGBuilder = dAGBuilder;
         this.element = element;
 
-        arrowsToChildren = new List<Arrow>();
-        children.Add(includeChild);
-        children.Add(excludeChild);
-
-        foreach (DAGVertex child in children)
+        arrowsToChildren = new List<LabelledArrow>();
+        children = new List<DAGVertex>
         {
-            if(child != null)
+            includeChild,
+            excludeChild
+        };
+
+        for(int i = 0; i < children.Count; i++)
+        {
+            if(children[i] != null)
             {
-                GameObject arrow = Instantiate(lineArrowPrefab);
-                arrow.transform.SetParent(dAGBuilder.transform);
-                arrowsToChildren.Add(arrow.GetComponent<Arrow>());
+                GameObject arrowObj = Instantiate(lineArrowPrefab);
+                arrowObj.transform.SetParent(dAGBuilder.transform);
+                LabelledArrow arrow = arrowObj.GetComponent<LabelledArrow>();
+                arrowsToChildren.Add(arrow);
+
+                //make label
+                string actionStr;
+                if(i == 0)
+                {
+                    actionStr = "Picking ";
+                }
+                else
+                {
+                    actionStr = "Not picking ";
+                }   
+                string lastElement = dAGBuilder.dPMatrixBuilder.GetElementAtIndex(element.nval);
+                arrow.CreateLabel(dAGBuilder.transform, actionStr + lastElement);
+
             }
             else
             {
@@ -40,14 +58,34 @@ public class DAGVertex : MonoBehaviour
             }
         }
 
+        //compute relevant strings
+        string target = element.bval.ToString();
+        string subset = dAGBuilder.dPMatrixBuilder.GetSubsetText(element.nval);
+
         //determine text here
         if(element.val == 1)
         {
-            text = "You can get target";
+            //base case
+            if(includeChild == null && excludeChild == null)
+            {
+                text = "Base Case: \nThe empty set is a valid subset that sums to 0 by definition.";
+            }
+            else
+            {
+                text = "You can get " + target + " from\n" + subset + " by:";
+            }
         }
         else
         {
-            text = "You cannot get target";
+            //base case
+            if(includeChild == null && excludeChild == null)
+            {
+                text = "Base Case: \nThere is no subset of the empty set that sums to " + target + ".";
+            }
+            else
+            {
+                text = "You cannot get " + target + " from\n" + subset;
+            }
         }
         vertexText.text = text;
     }
@@ -128,6 +166,7 @@ public class DAGVertex : MonoBehaviour
                 {
                     arrowsToChildren[i].DrawLine(parentPos, childPos, excludeColor);
                 }
+                arrowsToChildren[i].DrawLabel(parentPos, childPos);
             }
         }
     }
