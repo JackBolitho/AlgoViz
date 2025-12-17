@@ -54,7 +54,7 @@ MonoBehaviour:
   children: []
   includeColor: {r: 0.69803923, g: 1, b: 0.69803923, a: 1}
   excludeColor: {r: 1, g: 0.69803923, b: 0.69803923, a: 1}
-  lineArrowPrefab: {fileID: 861265586231275093, guid: 57f1719d078ef46bcb382418c9e0d154, type: 3}
+  lineArrowPrefab: {fileID: 861265586231275093, guid: d12cd70a4d8e74994b7a7788b419067b, type: 3}
 --- !u!1 &1389912136078626163
 GameObject:
   m_ObjectHideFlags: 0

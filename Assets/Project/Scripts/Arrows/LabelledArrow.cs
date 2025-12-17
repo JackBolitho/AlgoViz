@@ -1,6 +1,8 @@
 using TMPro;
 using UnityEngine;
 
+[RequireComponent(typeof(UIArrowGenerator))]
+[RequireComponent(typeof(RectTransform))]
 public class LabelledArrow : Arrow
 {
     [SerializeField] private GameObject labelPrefab;

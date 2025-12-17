@@ -60,7 +60,7 @@ MonoBehaviour:
   goalText: {fileID: 5928622018384548289}
   coverText: {fileID: 397664086639299359}
   lineArrowPrefab: {fileID: 861265586231275093, guid: da15afcbdcf484972bf1dd2fb9d4164a, type: 3}
-  arrowColor: {r: 0.28627452, g: 0.5686275, b: 0.74509805, a: 1}
+  arrowColor: {r: 0.39711642, g: 0.7955272, b: 0.8679245, a: 1}
   validColor: {r: 0.7, g: 1, b: 0.7, a: 1}
   invalidColor: {r: 1, g: 0.7, b: 0.7, a: 1}
 --- !u!114 &6359886075867009736

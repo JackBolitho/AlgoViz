@@ -49,7 +49,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dAGVertexPrefab: {fileID: 51297737200361792, guid: c0f073f72f0fe49f5bdd95d1ab676f05, type: 3}
-  labelPrefab: {fileID: 0}
   spacing: {x: 2.5, y: 2.5}
   backdropPrefab: {fileID: 4234727167152995069, guid: ec0455cf54ef246a580c826fdc32f8a2, type: 3}
   backdropPadding: {x: 1, y: 1}
@@ -137,7 +136,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &8939252347884043922
 MonoBehaviour:
   m_ObjectHideFlags: 0
